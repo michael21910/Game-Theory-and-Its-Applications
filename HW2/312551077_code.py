@@ -39,9 +39,6 @@ def IsNashEquilibriumMIS():
 
 # 1-1: create model of [ Maximal Independent Set (MIS) Game (Symmetric) ]
 def CreateMISModel(graph, response):
-    # randomize initial response
-    for i in range(len(response)):
-        response[i] = random.randint(0, 1)
     while IsNashEquilibriumMIS() == False:
         for i in range(len(graph) - 1):
             BestResponseMIS(i + 1)
@@ -90,18 +87,31 @@ def IsNashEquilibriumAMDSIDS():
 
 # 1-2: create model of [ Asymmetric MDS-based IDS Game ]
 def CreateAMDSIDSModel(graph, response):
-    # randomize initial response
-    for i in range(len(response)):
-        response[i] = random.randint(0, 1)
     while IsNashEquilibriumAMDSIDS() == False:
         for i in range(len(graph) - 1):
             if UtilityAMDSIDS(i + 1) == True:
                 response[i + 1] = 1 - response[i + 1]
     return response[1:]
 
+# find match for the node
+def findMatch(graph, match, visited, nodeIndex):
+    for vertex in graph[nodeIndex]:
+        if not visited[vertex]:
+            visited[vertex] = True
+            if match[vertex] == -1 or findMatch(graph, match, visited, match[vertex]):
+                match[vertex] = nodeIndex
+                return True
+    return False
+
 # 2: Maximum Matching Problem
 def MaximumMatchingProblem(graph, response):
-    pass
+    nodeCount = len(graph) - 1
+    match = [-1] * nodeCount
+    for nodeIndex in range(nodeCount):
+        visited = [False] * nodeCount
+        findMatch(graph, match, visited, nodeIndex)
+    matching = [vertex for vertex, edge in enumerate(match) if edge != -1]
+    return matching
 
 # reset response to 0
 def ResetResponse(response):
@@ -126,16 +136,19 @@ if __name__ == "__main__":
         graph.append(nodeConnection)
         response.append(0)
 
-    print("Graph connection information:", graph, sep="\n", end="\n\n")
+    # print("Graph connection information:", graph, sep="\n", end="\n\n")
 
     # get result of 1-1
     ResetResponse(response)
-    print("1-1 response:", CreateMISModel(graph, response))
+    print("Requirement 1-1:")
+    print("the cardinality of Maximal Independent Set (MIS) Game is", sum(1 for response in CreateMISModel(graph, response) if response == 1))
 
     # get result of 1-2
     ResetResponse(response)
-    print("1-2 response:", CreateAMDSIDSModel(graph, response))
+    print("Requirement 1-2:")
+    print("the cardinality of Asymmetric MDS-based IDS Game is", sum(1 for response in CreateAMDSIDSModel(graph, response) if response == 1))
 
     # get result of 2
     ResetResponse(response)
-    MaximumMatchingProblem(graph, response)
+    print("Requirement 2:")
+    print("the cardinality of Matching Game is", len(MaximumMatchingProblem(graph, response)) // 2)
