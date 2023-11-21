@@ -1,36 +1,49 @@
-# WS model
-import matplotlib.pyplot as plt
 import random
 
-# create a ring lattice
-def createRingLattice(n, k):
-    ringLattice = {}
-    for i in range(n):
-        ringLattice[i] = set()
-        for j in range(i - k // 2, i):
-            ringLattice[i].add(j % n)
-        for j in range(i + 1, i + 1 + k // 2):
-            ringLattice[i].add(j % n)
-    return ringLattice
+# the best response of a player in the Maximal Independent Set (MIS) Game (Symmetric)
+def BestResponseMIS(targetNodeIndex):
+    # graph[targetNodeIndex] are the open neighbors
+    for i in range(len(graph[targetNodeIndex])):
+        if response[graph[targetNodeIndex][i]] == 1:
+            response[targetNodeIndex] = 0
+            return
+    response[targetNodeIndex] = 1
+    return
 
-# create a WS model
-def createWSModel(n, k, p):
-    ring_lattice = createRingLattice(n, k)
-    for i in range(n):
-        for j in range(i + 1, i + 1 + k // 2):
-            if random.random() < p:
-                ring_lattice[i].remove(j % n)
-                ring_lattice[i].add(random.randint(0, n - 1))
-    return ring_lattice
+# the utility function of a player
+def UtilityMIS(targetNodeIndex):
+    pass
 
 # 1-1: create model of [ Maximal Independent Set (MIS) Game (Symmetric) ]
-def createMISModel(n, k, p):
+def CreateMISModel(graph, response):
     pass
 
 # 1-2: create model of [ Asymmetric MDS-based IDS Game ]
-def createAMDSIDSModel(n, k, p):
+def CreateAMDSIDSModel():
     pass
 
 # 2: Maximum Matching Problem
-def maximumMatchingProblem(n, k, p):
+def MaximumMatchingProblem():
     pass
+
+if __name__ == "__main__":
+    # read input
+    info = input().split(" ")
+    # relationship of nodes (no node 0)
+    graph = [[]]
+    # response of each node
+    response = [0]
+    # go through information
+    for i in range(int(info[0]) + 1):
+        if i == 0:
+            continue
+        nodeConnection = list()
+        for j in range(int(info[0])):
+            if info[i][j] == "1":
+                nodeConnection.append(j + 1)
+        graph.append(nodeConnection)
+        response.append(0)
+    # get result of 1-1
+    print(graph)
+    print(response)
+    CreateMISModel(graph, response)
