@@ -1,5 +1,3 @@
-import random
-
 # the best response of a player in the Maximal Independent Set (MIS) Game (Symmetric)
 def BestResponseMIS(targetNodeIndex):
     # graph[targetNodeIndex] are the open neighbors
@@ -96,20 +94,20 @@ def CreateAMDSIDSModel(graph, response):
 # find match for the node
 def findMatch(graph, match, visited, nodeIndex):
     for vertex in graph[nodeIndex]:
-        if not visited[vertex]:
-            visited[vertex] = True
-            if match[vertex] == -1 or findMatch(graph, match, visited, match[vertex]):
-                match[vertex] = nodeIndex
+        if not visited[vertex - 1]:
+            visited[vertex - 1] = True
+            if match[vertex - 1] == -1 or findMatch(graph, match, visited, match[vertex - 1]):
+                match[vertex - 1] = nodeIndex
                 return True
     return False
 
 # 2: Maximum Matching Problem
-def MaximumMatchingProblem(graph, response):
+def MaximumMatchingProblem(graph):
     nodeCount = len(graph) - 1
     match = [-1] * nodeCount
     for nodeIndex in range(nodeCount):
         visited = [False] * nodeCount
-        findMatch(graph, match, visited, nodeIndex)
+        findMatch(graph, match, visited, nodeIndex + 1)
     matching = [vertex for vertex, edge in enumerate(match) if edge != -1]
     return matching
 
@@ -141,14 +139,20 @@ if __name__ == "__main__":
     # get result of 1-1
     ResetResponse(response)
     print("Requirement 1-1:")
-    print("the cardinality of Maximal Independent Set (MIS) Game is", sum(1 for response in CreateMISModel(graph, response) if response == 1))
+    print("the cardinality of Maximal Independent Set (MIS) Game is", \
+          sum(1 for response in CreateMISModel(graph, response) if response == 1))
+    # print(response[1:])
 
     # get result of 1-2
     ResetResponse(response)
     print("Requirement 1-2:")
-    print("the cardinality of Asymmetric MDS-based IDS Game is", sum(1 for response in CreateAMDSIDSModel(graph, response) if response == 1))
+    print("the cardinality of Asymmetric MDS-based IDS Game is", \
+          sum(1 for response in CreateAMDSIDSModel(graph, response) if response == 1))
+    # print(response[1:])
 
     # get result of 2
     ResetResponse(response)
     print("Requirement 2:")
-    print("the cardinality of Matching Game is", len(MaximumMatchingProblem(graph, response)) // 2)
+    print("the cardinality of Matching Game is", \
+          len(MaximumMatchingProblem(graph)) // 2)
+    # print(MaximumMatchingProblem(graph))
